@@ -1,0 +1,55 @@
+pkgname=binutils-gdb
+pkgver=2.44.0
+pkgrel=1
+pkgdesc=" binutils with PSP patch applied."
+arch=(
+  "alpine_x86_64"
+  "ubuntu_x86_64"
+  "ubuntu_aarch64"
+  "debian_x86_64"
+  "fedora_x86_64"
+  "macos_x86_64"
+  "macos_arm64"
+)
+url="https://github.com/pspdev/binutils-gdb"
+license=('GPL-2.0-only')
+groups=('pspdev')
+depends=()
+makedepends=()
+optdepends=()
+provides=()
+source=(
+  "git+https://github.com/pspdev/binutils-gdb.git#commit=a8b53fe2b5825fa86337623c743d21a19aeb0daf"
+)
+sha256sums=(
+  "SKIP"
+)
+
+prepare() {
+  cd "${pkgname}"
+
+  TARG_XTRA_OPTS=""
+  if [ "$(uname -s)" = "Darwin" ]; then
+    TARG_XTRA_OPTS="--with-gmp=$(brew --prefix gmp) --with-mpfr=$(brew --prefix mpfr) --with-system-zlib"
+  fi
+
+  ./configure \
+    --prefix="${pkgdir}" \
+    --target="psp" \
+    --with-sysroot="${pkgdir}/psp" \
+    --enable-plugins \
+    --disable-initfini-array \
+    --with-python="no" \
+    --disable-werror \
+    $TARG_XTRA_OPTS
+}
+
+build() {
+  cd "${pkgname}"
+  make -j $(getconf _NPROCESSORS_ONLN) all
+}
+
+package() {
+  cd "${pkgname}"
+  make -j $(getconf _NPROCESSORS_ONLN) install
+}
