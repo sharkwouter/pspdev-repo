@@ -1,2 +1,4 @@
-*/*
-!*/PSPBUILD
+*/*/
+*/src
+*/pkg
+*/*.tar.gz
