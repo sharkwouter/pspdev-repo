@@ -1,7 +1,7 @@
 pkgname=binutils-gdb
 pkgver=2.44.0
 pkgrel=1
-pkgdesc=" binutils with PSP patch applied."
+pkgdesc="Binutils and GDB with PSP patches applied."
 arch=(
   "alpine_x86_64"
   "ubuntu_x86_64"
@@ -13,7 +13,7 @@ arch=(
 )
 url="https://github.com/pspdev/binutils-gdb"
 license=('GPL-2.0-only')
-groups=('pspdev')
+groups=('psp-toolchain')
 depends=()
 makedepends=()
 optdepends=()
@@ -52,4 +52,16 @@ build() {
 package() {
   cd "${pkgname}"
   make install
+
+  mkdir -m 755 -p "$pkgdir/share/licenses/$pkgname"
+  install -m 644 "COPYING" "$pkgdir/share/licenses/$pkgname"
+  install -m 644 "COPYING.LIB" "$pkgdir/share/licenses/$pkgname"
+  install -m 644 "COPYING.LIBGLOSS" "$pkgdir/share/licenses/$pkgname"
+  install -m 644 "COPYING.NEWLIB" "$pkgdir/share/licenses/$pkgname"
+  install -m 644 "COPYING3" "$pkgdir/share/licenses/$pkgname"
+  install -m 644 "COPYING3.LIB" "$pkgdir/share/licenses/$pkgname"
+  install -m 644 "MAINTAINERS" "$pkgdir/share/licenses/$pkgname"
+
+  # Remove file that gcc also creates
+  rm /home/wouter/pspdev/share/info/dir
 }

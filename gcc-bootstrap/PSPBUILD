@@ -1,0 +1,71 @@
+pkgname=gcc-bootstrap
+pkgver=20250619
+pkgrel=1
+pkgdesc="Stage 1 build of gcc, only needed to build Newlib, Pthread and the full gcc build."
+arch=(
+  "alpine_x86_64"
+  "ubuntu_x86_64"
+  "ubuntu_aarch64"
+  "debian_x86_64"
+  "fedora_x86_64"
+  "macos_x86_64"
+  "macos_arm64"
+)
+url="https://pspdev.github.io/"
+license=('GPL-3.0-or-later WITH GCC-exception-3.1')
+groups=()
+depends=('binutils-gdb')
+makedepends=()
+optdepends=()
+provides=()
+source=(
+  "git+https://github.com/pspdev/gcc.git#commit=1a33997924916ff5a6f61b64179ff9c8921f46c6"
+)
+sha256sums=(
+  "SKIP"
+)
+
+prepare() {
+  cd "gcc"
+
+  TARG_XTRA_OPTS=""
+  if [ "$(uname -s)" = "Darwin" ]; then
+    TARG_XTRA_OPTS="--with-gmp=$(brew --prefix gmp) --with-mpfr=$(brew --prefix mpfr) --with-mpc=$(brew --prefix libmpc) --with-system-zlib"
+  fi
+
+  ./configure \
+  --quiet \
+  --prefix="${pkgdir}" \
+  --target="psp" \
+  --enable-languages="c" \
+  --with-float=hard \
+  --with-headers=no \
+  --without-newlib \
+  --disable-libgcc \
+  --disable-shared \
+  --disable-threads \
+  --disable-libssp \
+  --disable-libgomp \
+  --disable-libmudflap \
+  --disable-libquadmath \
+  --disable-nls \
+  $TARG_XTRA_OPTS
+}
+
+build() {
+  cd gcc
+  make -j $(getconf _NPROCESSORS_ONLN) all-gcc
+}
+
+package() {
+  cd gcc
+  make install-gcc
+
+  mkdir -m 755 -p "$pkgdir/psp/share/licenses/$pkgname"
+  install -m 644 "COPYING" "$pkgdir/psp/share/licenses/$pkgname"
+  install -m 644 "COPYING.LIB" "$pkgdir/psp/share/licenses/$pkgname"
+  install -m 644 "COPYING.RUNTIME" "$pkgdir/psp/share/licenses/$pkgname"
+  install -m 644 "COPYING3" "$pkgdir/psp/share/licenses/$pkgname"
+  install -m 644 "COPYING3.LIB" "$pkgdir/psp/share/licenses/$pkgname"
+  install -m 644 "MAINTAINERS" "$pkgdir/psp/share/licenses/$pkgname"
+}

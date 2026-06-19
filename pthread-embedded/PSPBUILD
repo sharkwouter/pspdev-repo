@@ -1,0 +1,42 @@
+pkgname=pthread-embedded
+pkgver=20250614
+pkgrel=1
+pkgdesc="Multi-threading library for PSP."
+arch=(
+  "alpine_x86_64"
+  "ubuntu_x86_64"
+  "ubuntu_aarch64"
+  "debian_x86_64"
+  "fedora_x86_64"
+  "macos_x86_64"
+  "macos_arm64"
+)
+url="https://pspdev.github.io/"
+license=(
+  'GPL-3.0-or-later WITH GCC-exception-3.1'
+  'GFDL-1.3-or-later'
+)
+groups=('psp-toolchain')
+depends=('binutils-gdb' 'newlib')
+makedepends=('gcc-bootstrap')
+optdepends=()
+provides=()
+source=(
+  "git+https://github.com/pspdev/pthread-embedded.git#commit=97fe4ce006b420894f2bcaeb530d1f1f53111fc2"
+)
+sha256sums=(
+  "SKIP"
+)
+
+build() {
+  cd pthread-embedded/platform/psp
+  TARGET="psp" make -j $(getconf _NPROCESSORS_ONLN) all
+}
+
+package() {
+  cd pthread-embedded/platform/psp
+  PSPDEV=${pkgdir} make install
+
+  mkdir -m 755 -p "${pkgdir}/psp/share/licenses/$pkgname"
+  cp ../../COPYING.* ../../README.md "${pkgdir}/psp/share/licenses/${pkgname}"
+}

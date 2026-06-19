@@ -1,0 +1,71 @@
+pkgname=newlib
+pkgver=20250619
+pkgrel=1
+pkgdesc="C library for PSP."
+arch=(
+  "alpine_x86_64"
+  "ubuntu_x86_64"
+  "ubuntu_aarch64"
+  "debian_x86_64"
+  "fedora_x86_64"
+  "macos_x86_64"
+  "macos_arm64"
+)
+url="https://pspdev.github.io/"
+license=('BSD')
+groups=()
+depends=('binutils-gdb')
+makedepends=('gcc-bootstrap')
+optdepends=()
+provides=()
+source=(
+  "git+https://github.com/pspdev/newlib.git#commit=9e0a073634ad73e8e088f2e071c55a9fe5d39709"
+)
+sha256sums=(
+  "SKIP"
+)
+
+prepare() {
+  cd "newlib"
+
+  TARG_XTRA_OPTS=""
+  if [ "$(uname -s)" = "Darwin" ]; then
+    TARG_XTRA_OPTS="--with-gmp=$(brew --prefix gmp) --with-mpfr=$(brew --prefix mpfr) --with-mpc=$(brew --prefix libmpc) --with-system-zlib"
+  fi
+
+  ./configure \
+	--prefix="${pkgdir}" \
+	--target="psp" \
+	--with-sysroot="${pkgdir}/psp" \
+	--enable-newlib-retargetable-locking \
+	--enable-newlib-multithread \
+	--enable-newlib-io-c99-formats \
+ 	--enable-newlib-iconv \
+  --enable-newlib-iconv-encodings=us_ascii,utf8,utf16,ucs_2_internal,ucs_4_internal,iso_8859_1 \
+	$TARG_XTRA_OPTS
+}
+
+build() {
+  cd newlib
+  make -j $(getconf _NPROCESSORS_ONLN) all
+}
+
+package() {
+  cd newlib
+  make install
+
+  mkdir -m 755 -p "$pkgdir/psp/share/licenses/$pkgname"
+  install -m 644 "COPYING" "$pkgdir/psp/share/licenses/$pkgname"
+  install -m 644 "COPYING.LIB" "$pkgdir/psp/share/licenses/$pkgname"
+  install -m 644 "COPYING.LIBGLOSS" "$pkgdir/psp/share/licenses/$pkgname"
+  install -m 644 "COPYING.NEWLIB" "$pkgdir/psp/share/licenses/$pkgname"
+  install -m 644 "COPYING3" "$pkgdir/psp/share/licenses/$pkgname"
+  install -m 644 "COPYING3.LIB" "$pkgdir/psp/share/licenses/$pkgname"
+  install -m 644 "MAINTAINERS" "$pkgdir/psp/share/licenses/$pkgname"
+
+  # Remove files that pthread-embedded would overwrite
+  rm ${pkgdir}/psp/include/pthread.h
+  rm ${pkgdir}/psp/include/sched.h
+  rm ${pkgdir}/psp/include/sys/_pthreadtypes.h
+  rm ${pkgdir}/psp/include/sys/sched.h
+}
