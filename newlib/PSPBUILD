@@ -13,7 +13,7 @@ arch=(
 )
 url="https://pspdev.github.io/"
 license=('BSD')
-groups=()
+groups=('psp-toolchain')
 depends=('binutils-gdb')
 makedepends=('gcc-bootstrap')
 optdepends=()
