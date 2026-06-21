@@ -27,13 +27,14 @@ sha256sums=(
 
 prepare() {
   cd "gcc"
+  rm -rf build && mkdir build && cd build
 
   TARG_XTRA_OPTS=""
   if [ "$(uname -s)" = "Darwin" ]; then
     TARG_XTRA_OPTS="--with-gmp=$(brew --prefix gmp) --with-mpfr=$(brew --prefix mpfr) --with-mpc=$(brew --prefix libmpc) --with-system-zlib"
   fi
 
-  ./configure \
+  ../configure \
   --quiet \
   --prefix="${pkgdir}" \
   --target="psp" \
@@ -53,12 +54,12 @@ prepare() {
 }
 
 build() {
-  cd gcc
+  cd gcc/build
   make -j $(getconf _NPROCESSORS_ONLN) all-gcc
 }
 
 package() {
-  cd gcc
+  cd gcc/build
   make install-gcc
 
   mkdir -m 755 -p "$pkgdir/psp/share/licenses/$pkgname"
