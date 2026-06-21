@@ -63,5 +63,5 @@ package() {
   install -m 644 "MAINTAINERS" "$pkgdir/share/licenses/$pkgname"
 
   # Remove file that gcc also creates
-  rm /home/wouter/pspdev/share/info/dir
+  rm -f ${pkgdir}/share/info/dir
 }
