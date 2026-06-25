@@ -62,6 +62,7 @@ package() {
   cd gcc/build
   make install-gcc
 
+  cd ..
   mkdir -m 755 -p "$pkgdir/psp/share/licenses/$pkgname"
   install -m 644 "COPYING" "$pkgdir/psp/share/licenses/$pkgname"
   install -m 644 "COPYING.LIB" "$pkgdir/psp/share/licenses/$pkgname"
