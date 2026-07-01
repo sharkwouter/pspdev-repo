@@ -34,9 +34,9 @@ prepare() {
   fi
 
   ./configure \
-    --prefix="${pkgdir}" \
+    --prefix="${PSPDEV}" \
     --target="psp" \
-    --with-sysroot="${pkgdir}/psp" \
+    --with-sysroot="${PSPDEV}/psp" \
     --enable-plugins \
     --disable-initfini-array \
     --with-python="no" \
@@ -51,7 +51,7 @@ build() {
 
 package() {
   cd "${pkgname}"
-  make install
+  make DESTDIR="${pkgdir}" install
 
   mkdir -m 755 -p "$pkgdir/share/licenses/$pkgname"
   install -m 644 "COPYING" "$pkgdir/share/licenses/$pkgname"
@@ -62,6 +62,5 @@ package() {
   install -m 644 "COPYING3.LIB" "$pkgdir/share/licenses/$pkgname"
   install -m 644 "MAINTAINERS" "$pkgdir/share/licenses/$pkgname"
 
-  # Remove file that gcc also creates
-  rm -f ${pkgdir}/share/info/dir
+  rm -f "${pkgdir}/share/info/dir"
 }

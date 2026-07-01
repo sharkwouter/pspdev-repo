@@ -35,7 +35,7 @@ prepare() {
   fi
 
   ../configure \
-	--prefix="${pkgdir}" \
+	--prefix="/" \
 	--target="psp" \
 	--with-sysroot="${pkgdir}/psp" \
 	--enable-newlib-retargetable-locking \
@@ -48,7 +48,7 @@ prepare() {
 
 build() {
   cd newlib/build
-  make -j $(getconf _NPROCESSORS_ONLN) all
+  make DESTDIR="${pkgdir}" -j $(getconf _NPROCESSORS_ONLN) all
 }
 
 package() {

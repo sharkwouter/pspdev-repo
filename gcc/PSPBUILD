@@ -37,9 +37,9 @@ prepare() {
 
   ../configure \
   --quiet \
-  --prefix="${pkgdir}" \
+  --prefix="/" \
   --target="psp" \
-  --with-sysroot="${pkgdir}/psp" \
+  --with-sysroot="/psp" \
   --with-native-system-header-dir="/include" \
   --enable-languages="c,c++" \
   --with-float=hard \
@@ -59,13 +59,15 @@ build() {
 
 package() {
   cd gcc/build
-  make install
+  make DESTDIR="$pkgdir" install
 
-  mkdir -m 755 -p "$pkgdir/psp/share/licenses/$pkgname"
-  install -m 644 "COPYING" "$pkgdir/psp/share/licenses/$pkgname"
-  install -m 644 "COPYING.LIB" "$pkgdir/psp/share/licenses/$pkgname"
-  install -m 644 "COPYING.RUNTIME" "$pkgdir/psp/share/licenses/$pkgname"
-  install -m 644 "COPYING3" "$pkgdir/psp/share/licenses/$pkgname"
-  install -m 644 "COPYING3.LIB" "$pkgdir/psp/share/licenses/$pkgname"
-  install -m 644 "MAINTAINERS" "$pkgdir/psp/share/licenses/$pkgname"
+  mkdir -m 755 -p "$pkgdir/share/licenses/$pkgname"
+  install -m 644 "COPYING" "$pkgdir/share/licenses/$pkgname"
+  install -m 644 "COPYING.LIB" "$pkgdir/share/licenses/$pkgname"
+  install -m 644 "COPYING.RUNTIME" "$pkgdir/share/licenses/$pkgname"
+  install -m 644 "COPYING3" "$pkgdir/share/licenses/$pkgname"
+  install -m 644 "COPYING3.LIB" "$pkgdir/share/licenses/$pkgname"
+  install -m 644 "MAINTAINERS" "$pkgdir/share/licenses/$pkgname"
+
+  rm -f "${pkgdir}/share/info/dir"
 }
